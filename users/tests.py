@@ -111,6 +111,20 @@ class TestUserApi(APITestCase):
         res = self.client.get(reverse('status'))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
+    def test_status(self):
+        res = self._register_user()
+        user_data = UserSerializer(
+            instance=User.objects.get(username='test')).data
+
+        res = self.client.post(reverse('login'), data={
+            'username': 'test',
+            'password': '123tester123',
+        })
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        res = self.client.get(reverse('status'))
+        self.assertEqual(res.json(), user_data)
+
     def test_bad_login(self):
         res = self.client.post(reverse('login'), data={
             'username': 'test',
