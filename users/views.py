@@ -31,9 +31,9 @@ def login_user(request: Request) -> Response:
 
         if user:
             login(request, user)
-            return Response()
+            return Response(UserSerializer(instance=user).data)
 
-        return Response({'msg': 'Invalid credentials'}, status=s.HTTP_403_FORBIDDEN)
+        return Response({'err': 'Invalid credentials'}, status=s.HTTP_403_FORBIDDEN)
 
 
 @api_view(['POST'])
