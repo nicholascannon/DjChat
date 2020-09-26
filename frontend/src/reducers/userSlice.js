@@ -6,7 +6,7 @@ export const userSlice = createSlice({
 	name: 'user',
 	initialState: {
 		user: null,
-		isLoading: false,
+		isLoading: true,
 		error: null
 	},
 	reducers: {
@@ -82,5 +82,6 @@ export const checkStatus = () => dispatch => {
 export const selectUser = state => state.user.user;
 export const selectIsLoading = state => state.user.isLoading;
 export const selectAuthError = state => state.user.error;
+export const selectIsLoggedIn = state => !(!state.user.isLoading && state.user.user);
 
 export default userSlice.reducer;
