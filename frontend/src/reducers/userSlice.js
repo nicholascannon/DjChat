@@ -34,6 +34,12 @@ export const userSlice = createSlice({
 // ACTIONS
 export const {loadUser, clearUser, setLoading, setUserError} = userSlice.actions;
 
+// SELECTORS
+export const selectUser = state => state.user.user;
+export const selectIsLoading = state => state.user.isLoading;
+export const selectAuthError = state => state.user.error;
+export const selectIsLoggedIn = state => !!(!state.user.isLoading && state.user.user);
+
 // THUNKS
 export const login = (username, password) => dispatch => {
 	dispatch(setLoading(true));
@@ -69,6 +75,8 @@ export const checkStatus = () => dispatch => {
 		.get('/auth/status/')
 		.then(res => dispatch(loadUser(res.data)))
 		.catch(err => {
+			dispatch(setLoading(false));
+
 			// expect a 403 if user has no session active
 			if (err.response && err.response.status !== 403) {
 				dispatch(setUserError(err.response.data.err));
@@ -77,11 +85,5 @@ export const checkStatus = () => dispatch => {
 			}
 		});
 };
-
-// SELECTORS
-export const selectUser = state => state.user.user;
-export const selectIsLoading = state => state.user.isLoading;
-export const selectAuthError = state => state.user.error;
-export const selectIsLoggedIn = state => !(!state.user.isLoading && state.user.user);
 
 export default userSlice.reducer;

@@ -12,20 +12,26 @@ function LoginPage() {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 
+	console.log(isLoggedIn);
 	if (isLoggedIn) return <Redirect to="/" />;
+
+	const submitLogin = e => {
+		e.preventDefault();
+		dispatch(login(username, password));
+	};
 
 	return (
 		<div className="App">
 			<h1>Login</h1>
-			<form>
+			<form onSubmit={submitLogin}>
 				<input type="text" value={username} onChange={e => setUsername(e.target.value)} />
 				<input type="password" value={password} onChange={e => setPassword(e.target.value)} />
-				<button type="submit">Login</button>
+				<button type="submit" disabled={!username || !password}>
+					Login
+				</button>
 
-				{/* <button onClick={() => dispatch(login('admin', 'password'))}>login</button> */}
+				{authError && <p>{authError}</p>}
 			</form>
-
-			{authError && <p>{authError}</p>}
 		</div>
 	);
 }

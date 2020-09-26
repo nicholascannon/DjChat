@@ -1,10 +1,11 @@
 import React from 'react';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 
-import {selectUser, selectIsLoading} from '../reducers/userSlice';
+import {selectUser, selectIsLoading, logout} from '../reducers/userSlice';
 
 function ChatPage() {
+	const dispatch = useDispatch();
 	const user = useSelector(selectUser);
 	const userLoading = useSelector(selectIsLoading);
 
@@ -14,7 +15,9 @@ function ChatPage() {
 	return (
 		<div>
 			<h1>Chat Page</h1>
-			{user && user.username}
+			<p>{user && user.username}</p>
+
+			<button onClick={() => dispatch(logout())}>Logout</button>
 		</div>
 	);
 }
