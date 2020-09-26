@@ -1,17 +1,16 @@
 import React, {useEffect, useCallback} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {login, logout, checkStatus, selectUser} from './reducers/userSlice';
+import {login, logout, checkStatus, selectUser, selectAuthError} from './reducers/userSlice';
 
 import './App.css';
 
 function App() {
 	const dispatch = useCallback(useDispatch(), []);
 	const user = useSelector(selectUser);
+	const authError = useSelector(selectAuthError);
 
-	useEffect(() => {
-		dispatch(checkStatus());
-	}, [dispatch]);
+	useEffect(() => dispatch(checkStatus()), [dispatch]);
 
 	return (
 		<div className="App">
@@ -24,6 +23,8 @@ function App() {
 			) : (
 				<button onClick={() => dispatch(login('admin', 'password'))}>login</button>
 			)}
+
+			{authError && <p>{authError}</p>}
 		</div>
 	);
 }
