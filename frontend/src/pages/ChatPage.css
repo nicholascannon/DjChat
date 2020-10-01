@@ -1,0 +1,23 @@
+.ChatPage nav {
+	background-color: #e4e4e4;
+}
+.ChatPage nav ul {
+	list-style-type: none;
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	padding: 1em;
+}
+.ChatPage nav ul button {
+	border: none;
+	padding: 8px;
+	border-radius: 5px;
+
+	background-color: white;
+}
+.ChatPage nav ul button:hover {
+	background-color: #3172ff;
+	color: #fff;
+}

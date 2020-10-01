@@ -1,0 +1,22 @@
+.loginPage {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+
+	height: 100vh;
+}
+.loginForm {
+	padding: 2em;
+	border-radius: 10px;
+	background-color: #e4e4e4;
+
+	width: 400px;
+}
+
+.loginMsg {
+	margin: 1em 0 0 0;
+}
+.formError {
+	color: #ff7373;
+}

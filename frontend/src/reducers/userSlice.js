@@ -17,6 +17,7 @@ export const userSlice = createSlice({
 		},
 		setLoading: (state, action) => {
 			state.isLoading = action.payload;
+			state.error = null;
 		},
 		setUserError: (state, action) => {
 			state.error = action.payload;

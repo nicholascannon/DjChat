@@ -4,6 +4,8 @@ import {Redirect} from 'react-router-dom';
 
 import {selectUser, selectIsLoading, logout} from '../reducers/userSlice';
 
+import './ChatPage.css';
+
 function ChatPage() {
 	const dispatch = useDispatch();
 	const user = useSelector(selectUser);
@@ -13,11 +15,19 @@ function ChatPage() {
 	if (!user) return <Redirect to="/login" />;
 
 	return (
-		<div>
-			<h1>Chat Page</h1>
-			<p>{user && user.username}</p>
+		<div className="ChatPage">
+			<nav>
+				<ul>
+					<li>
+						<strong>Logged in as {user.username}</strong>
+					</li>
+					<li>
+						<button onClick={() => dispatch(logout())}>Logout</button>
+					</li>
+				</ul>
+			</nav>
 
-			<button onClick={() => dispatch(logout())}>Logout</button>
+			<div className="msgBox"></div>
 		</div>
 	);
 }

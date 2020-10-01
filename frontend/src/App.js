@@ -15,13 +15,11 @@ function App() {
 	useEffect(() => dispatch(checkStatus()), [dispatch]);
 
 	return (
-		<div>
-			<Switch>
-				<Route exact path="/login" component={LoginPage} />
-				<Route exact path="/" component={ChatPage} />
-				<Route component={NotFoundPage} />
-			</Switch>
-		</div>
+		<Switch>
+			<Route exact path="/login" component={LoginPage} />
+			<Route exact path="/" component={ChatPage} />
+			<Route component={NotFoundPage} />
+		</Switch>
 	);
 }
 
