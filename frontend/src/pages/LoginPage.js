@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Redirect} from 'react-router-dom';
-import {Form, Button} from 'react-bootstrap';
+import {Form, Button, Spinner} from 'react-bootstrap';
 
 import './LoginPage.css';
 
@@ -27,7 +27,7 @@ function LoginPage() {
 	return (
 		<div className="loginPage">
 			{isLoading ? (
-				<h1>Loading...</h1>
+				<Spinner animation="grow" />
 			) : (
 				<Form className="loginForm" onSubmit={submitLogin}>
 					<h1>Login</h1>

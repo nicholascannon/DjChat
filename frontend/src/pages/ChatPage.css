@@ -1,23 +1,36 @@
-.ChatPage nav {
-	background-color: #e4e4e4;
+.ChatPage {
+	min-height: 100vh;
 }
-.ChatPage nav ul {
-	list-style-type: none;
+
+.ChatPage .msgCont {
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+
+	box-sizing: border-box;
+	margin: 2em;
+}
+
+.ChatPage .msgCont .msgBox {
+	box-sizing: border-box;
+	padding: 1em;
+
+	width: 900px;
+	height: 500px;
 
 	display: flex;
-	justify-content: space-between;
-	align-items: center;
-
-	padding: 1em;
+	flex-direction: column;
 }
-.ChatPage nav ul button {
-	border: none;
-	padding: 8px;
-	border-radius: 5px;
+.ChatPage .msgCont .msgBox .msgDisplay {
+	flex: 5;
+	margin-bottom: 1em;
 
-	background-color: white;
+	display: flex;
+	flex-direction: column;
+	/* justify-content: flex-end; */
+
+	overflow-y: scroll;
 }
-.ChatPage nav ul button:hover {
-	background-color: #3172ff;
-	color: #fff;
+.ChatPage .msgCont .msgBox form {
+	flex: 1;
 }
