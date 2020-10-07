@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {Navbar, Nav, Form, Button, Card, Spinner} from 'react-bootstrap';
@@ -7,16 +7,36 @@ import {selectUser, selectIsLoading, logout} from '../reducers/userSlice';
 
 import './ChatPage.css';
 
+let MSGS = [
+	{
+		msg: 'hello',
+		recieved: false
+	},
+	{
+		msg: 'hello bac',
+		recieved: true
+	}
+];
+
 function ChatPage() {
 	const dispatch = useDispatch();
 	const user = useSelector(selectUser);
 	const userLoading = useSelector(selectIsLoading);
 
+	const [newMsg, setNewMsg] = useState('');
+
 	if (userLoading) return <Spinner animation="grow" />;
 	if (!user) return <Redirect to="/login" />;
 
-	const sendMsg = e => {
+	const sendNewMsg = e => {
 		e.preventDefault();
+		MSGS = [{msg: newMsg}, ...MSGS];
+		setNewMsg('');
+	};
+
+	// submit form when enter pressed in text area
+	const onKeyDown = e => {
+		if (e.keyCode === 13 && e.shiftKey === false) sendNewMsg(e);
 	};
 
 	return (
@@ -35,19 +55,33 @@ function ChatPage() {
 			<div className="msgCont">
 				<div className="msgBox">
 					<div className="msgDisplay">
-						<Card className="mt-3" body bg="primary" text="light">
-							1
-						</Card>
-						<Card className="mt-3" body bg="light">
-							2
-						</Card>
+						{MSGS.map(({recieved, msg}) => (
+							<Card
+								className={`mt-3 ${recieved && 'ml-auto'}`}
+								body
+								style={{overflowWrap: 'anywhere'}}
+								bg={recieved ? 'light' : 'primary'}
+								text={recieved ? 'dark' : 'light'}>
+								{msg}
+							</Card>
+						))}
 					</div>
 
-					<Form onSubmit={sendMsg}>
+					<Form onSubmit={sendNewMsg}>
 						<Form.Group>
-							<Form.Control as="textarea" rows="3" style={{resize: 'none'}} />
+							<Form.Control
+								as="textarea"
+								rows="3"
+								style={{resize: 'none'}}
+								value={newMsg}
+								onKeyDown={onKeyDown}
+								onChange={e => setNewMsg(e.target.value)}
+							/>
 						</Form.Group>
-						<Button type="submit">Send</Button>
+
+						<Button type="submit" disabled={!newMsg}>
+							Send
+						</Button>
 					</Form>
 				</div>
 			</div>
