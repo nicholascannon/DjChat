@@ -38,6 +38,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'corsheaders',
+    'channels',
     'users',
 ]
 
@@ -71,6 +72,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+ASGI_APPLICATION = 'core.routing.application'
 
 
 # Password validation
