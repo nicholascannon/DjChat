@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'channels',
     'users',
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -72,7 +73,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
-ASGI_APPLICATION = 'core.routing.application'
 
 
 # Password validation
@@ -116,3 +116,6 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'users.User'
 
 CORS_ALLOW_CREDENTIALS = True
+
+# Channels
+ASGI_APPLICATION = 'core.routing.application'

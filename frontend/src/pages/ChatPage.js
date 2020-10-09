@@ -3,22 +3,27 @@ import {useSelector, useDispatch} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {Navbar, Nav, Form, Button, Card, Spinner} from 'react-bootstrap';
 
+import {API_HOST} from '../globals';
 import {selectUser, selectIsLoading, logout} from '../reducers/userSlice';
 
 import './ChatPage.css';
 
 let MSGS = [
-	{
-		msg: 'hello bac',
-		recieved: true,
-		uuid: '1heck'
-	},
-	{
-		msg: 'hello',
-		recieved: false,
-		uuid: 'heck'
-	}
+	// {
+	// 	msg: 'hello bac',
+	// 	recieved: true,
+	// 	uuid: '1heck'
+	// },
 ];
+const CHAT_UUID = '4470ec42-1917-48f1-acd6-55769214731d';
+
+const chatSocket = new WebSocket(`ws://${API_HOST}/ws/chat/${CHAT_UUID}/`);
+chatSocket.onmessage = e => {
+	console.log(JSON.parse(e.data));
+};
+chatSocket.onclose = e => {
+	console.error('Chat socket closed');
+};
 
 function ChatPage() {
 	const dispatch = useDispatch();
@@ -32,7 +37,7 @@ function ChatPage() {
 
 	const sendNewMsg = e => {
 		e.preventDefault();
-		MSGS = [{msg: newMsg}, ...MSGS];
+		chatSocket.send(JSON.stringify({message: newMsg}));
 		setNewMsg('');
 	};
 
