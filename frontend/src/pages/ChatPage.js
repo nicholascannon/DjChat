@@ -9,12 +9,14 @@ import './ChatPage.css';
 
 let MSGS = [
 	{
-		msg: 'hello',
-		recieved: false
+		msg: 'hello bac',
+		recieved: true,
+		uuid: '1heck'
 	},
 	{
-		msg: 'hello bac',
-		recieved: true
+		msg: 'hello',
+		recieved: false,
+		uuid: 'heck'
 	}
 ];
 
@@ -55,8 +57,9 @@ function ChatPage() {
 			<div className="msgCont">
 				<div className="msgBox">
 					<div className="msgDisplay">
-						{MSGS.map(({recieved, msg}) => (
+						{MSGS.map(({uuid, recieved, msg}) => (
 							<Card
+								key={uuid}
 								className={`mt-3 ${recieved && 'ml-auto'}`}
 								body
 								style={{overflowWrap: 'anywhere'}}
