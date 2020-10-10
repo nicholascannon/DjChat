@@ -1,55 +1,57 @@
 import json
-from django.core.checks import messages
 from django.db.models import Q
-from channels.generic.websocket import WebsocketConsumer
-from asgiref.sync import async_to_sync
+from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
 
 from .models import Chat, ChatMessage
 
 
-class ChatConsumer(WebsocketConsumer):
+class ChatConsumer(AsyncWebsocketConsumer):
 
-    def connect(self):
+    @database_sync_to_async
+    def get_chat(self, chat_uuid, user):
+        return Chat.objects.get(Q(uuid=chat_uuid) & (Q(user1=user) | Q(user2=user)))
+
+    @database_sync_to_async
+    def create_message(self, message, sender):
+        return ChatMessage.objects.create(message=message, sender=sender, chat=self.chat)
+
+    async def connect(self):
         if self.scope['user'].is_anonymous:
-            self.close()
+            await self.close()
         else:
             user = self.scope['user']
             chat_uuid = self.scope['url_route']['kwargs'].get('chat_id')
 
             try:
                 # authenticate user with chat
-                self.chat = Chat.objects.get(
-                    Q(uuid=chat_uuid) & (Q(user1=user) | Q(user2=user)))
+                self.chat = await self.get_chat(chat_uuid, user)
                 self.room_name = f'chat.{chat_uuid}'
 
                 # join channel group
-                async_to_sync(self.channel_layer.group_add)(
-                    self.room_name, self.channel_name)
-
-                self.accept()
+                await self.channel_layer.group_add(self.room_name, self.channel_name)
+                await self.accept()
             except Chat.DoesNotExist:
-                self.close()  # not a valid chat for this user -> close conn
+                await self.close()  # not a valid chat for this user -> close conn
 
-    def disconnect(self, code):
+    async def disconnect(self, code):
         # leave channel group if joined
         if hasattr(self, 'room_name'):
-            async_to_sync(self.channel_layer.group_discard)(
-                self.room_name, self.channel_name
-            )
+            await self.channel_layer.group_discard(self.room_name, self.channel_name)
 
-    def receive(self, text_data):
+    async def receive(self, text_data):
         sender = self.scope['user']
         payload = json.loads(text_data)
         message = payload.get('message')
 
         if not message:
-            self.send(json.dumps({'error': 'No message'}))
+            await self.send(json.dumps({'error': 'No message'}))
         else:
             try:
                 # create message then send to channel group
-                msg_obj = ChatMessage.objects.create(
-                    message=message, sender=sender, chat=self.chat)
-                async_to_sync(self.channel_layer.group_send)(
+                msg_obj = await self.create_message(message, sender)
+
+                await self.channel_layer.group_send(
                     self.room_name,
                     {
                         'type': 'chat_recieved',
@@ -60,13 +62,13 @@ class ChatConsumer(WebsocketConsumer):
                 )
             except Exception as e:
                 # TODO: log error here
-                self.send(json.dumps(
+                await self.send(json.dumps(
                     {'error': 'There was an error sending your message'}))
 
-    def chat_recieved(self, event):
+    async def chat_recieved(self, event):
         # ignore message if sent to self
         if self.channel_name != event['sender_channel_name']:
-            self.send(json.dumps({
+            await self.send(json.dumps({
                 'message': event['message'],
                 'uuid': event['uuid'],
                 'recieved': True
