@@ -1,14 +1,14 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {instance} from '../globals';
 
-// import {instance} from '../globals';
+import {instance} from '../globals';
 
 export const chatSlice = createSlice({
 	name: ' chat',
 	initialState: {
 		messages: [],
 		loading: false,
-		error: null
+		error: null,
+		chats: []
 	},
 	reducers: {
 		loadMessages: (state, action) => {
@@ -23,6 +23,10 @@ export const chatSlice = createSlice({
 			state.messages = [];
 			state.error = null;
 		},
+		loadChats: (state, action) => {
+			state.chats = action.payload;
+			state.loading = false;
+		},
 		setLoading: (state, action) => {
 			state.loading = action.payload;
 			state.error = null;
@@ -35,18 +39,34 @@ export const chatSlice = createSlice({
 });
 
 // ACTIONS
-export const {loadMessages, loadMessage, clearMessages, setError, setLoading} = chatSlice.actions;
+export const {
+	loadMessages,
+	loadMessage,
+	clearMessages,
+	loadChats,
+	setError,
+	setLoading
+} = chatSlice.actions;
 
 // SELECTORS
 export const selectMessages = state => state.chat.messages;
 export const selectChatLoading = state => state.chat.loading;
 export const selectChatError = state => state.chat.error;
+export const selectChats = state => state.chat.chats;
 
 export const fetchMessages = chat_uuid => dispatch => {
 	dispatch(setLoading(true));
 	instance
 		.get(`/chat/${chat_uuid}/`)
 		.then(res => dispatch(loadMessages(res.data)))
+		.catch(err => dispatch(setError(err.response.data.detail)));
+};
+
+export const getChats = () => dispatch => {
+	dispatch(setLoading(true));
+	instance
+		.get('/chat/')
+		.then(res => dispatch(loadChats(res.data)))
 		.catch(err => dispatch(setError(err.response.data.detail)));
 };
 
