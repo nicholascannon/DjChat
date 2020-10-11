@@ -13,8 +13,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return Chat.objects.get(Q(uuid=chat_uuid) & (Q(user1=user) | Q(user2=user)))
 
     @database_sync_to_async
-    def create_message(self, message, sender):
-        return ChatMessage.objects.create(message=message, sender=sender, chat=self.chat)
+    def create_message(self, message, sender, uuid):
+        return ChatMessage.objects.create(message=message, uuid=uuid, sender=sender,
+                                          chat=self.chat)
 
     async def connect(self):
         if self.scope['user'].is_anonymous:
@@ -43,13 +44,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         sender = self.scope['user']
         payload = json.loads(text_data)
         message = payload.get('message')
+        uuid = payload.get('uuid')
 
         if not message:
-            await self.send(json.dumps({'error': 'No message'}))
+            await self.send(json.dumps({'type': 'error', 'data': {'message': 'No message'}}))
         else:
             try:
                 # create message then send to channel group
-                msg_obj = await self.create_message(message, sender)
+                msg_obj = await self.create_message(message, sender, uuid)
 
                 await self.channel_layer.group_send(
                     self.room_name,
@@ -62,14 +64,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 )
             except Exception as e:
                 # TODO: log error here
-                await self.send(json.dumps(
-                    {'error': 'There was an error sending your message'}))
+                await self.send(json.dumps({
+                    'type': 'error',
+                    'data': {
+                        'message': 'There was an error sending your message'
+                    }
+                }))
 
     async def chat_recieved(self, event):
         # ignore message if sent to self
         if self.channel_name != event['sender_channel_name']:
             await self.send(json.dumps({
-                'message': event['message'],
-                'uuid': event['uuid'],
-                'recieved': True
+                'type': 'chat_message',
+                'data': {
+                    'message': event['message'],
+                    'uuid': event['uuid'],
+                    'recieved': True
+                }
             }))

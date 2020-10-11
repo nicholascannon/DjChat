@@ -17,7 +17,7 @@ function App() {
 	return (
 		<Switch>
 			<Route exact path="/login" component={LoginPage} />
-			<Route exact path="/" component={ChatPage} />
+			<Route exact path="/chat/:chatUuid" component={ChatPage} />
 			<Route component={NotFoundPage} />
 		</Switch>
 	);
