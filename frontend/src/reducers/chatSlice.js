@@ -70,4 +70,16 @@ export const getChats = () => dispatch => {
 		.catch(err => dispatch(setError(err.response.data.detail)));
 };
 
+export const createChat = (recipient, history) => dispatch => {
+	dispatch(setLoading(true));
+	instance
+		.post('/chat/', {recipient})
+		.then(res => {
+			const chat_uuid = res.data.uuid;
+			dispatch(setLoading(false));
+			history.push(`/chat/${chat_uuid}`);
+		})
+		.catch(err => dispatch(setError(err.response.data.detail)));
+};
+
 export default chatSlice.reducer;
