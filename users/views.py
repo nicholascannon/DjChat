@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import login, logout, authenticate
 
 from .serializers import UserSerializer, LoginSerializer
+from .models import User
 
 
 @api_view(['POST'])
@@ -58,3 +59,17 @@ def update_user(request: Request) -> Response:
 def status(request: Request) -> Response:
     user = UserSerializer(instance=request.user)
     return Response(user.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def search_user(request: Request) -> Response:
+    """
+    Search user by query.
+    """
+    if not request.query_params.get('query'):
+        return Response({'type': 'error', 'data': {'message': 'Invalid username query'}})
+
+    users = User.objects.filter(
+        username__contains=request.query_params.get('query'))
+    return Response(UserSerializer(instance=users, many=True).data)
