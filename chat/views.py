@@ -15,8 +15,7 @@ class ChatMessageListView(ListAPIView):
         """
         Filter chat messages by requested chat
         """
-        return (ChatMessage.objects.filter(chat__uuid=self.kwargs['chat_uuid'])
-                .order_by('-date_sent'))
+        return ChatMessage.objects.filter(chat__uuid=self.kwargs['chat_uuid'].order_by('-date_sent'))
 
 
 class ChatListCreateView(ListCreateAPIView):
@@ -24,4 +23,4 @@ class ChatListCreateView(ListCreateAPIView):
     serializer_class = ChatSerializer
 
     def get_queryset(self):
-        return Chat.objects.filter(Q(user1=self.request.user) | Q(user1=self.request.user))
+        return Chat.objects.filter(Q(user1=self.request.user) | Q(user2=self.request.user))

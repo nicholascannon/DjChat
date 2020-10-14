@@ -39,12 +39,16 @@ class ChatSerializer(serializers.ModelSerializer):
         Checks if recipient is a valid user. 
         """
         try:
-            User.objects.get(username=recipient)
-            return recipient
+            return User.objects.get(username=recipient)
         except User.DoesNotExist:
             raise serializers.ValidationError(f'Invalid user {recipient}')
+
+    def create(self, validated_data):
+        user1 = self.context['request'].user
+        user2 = validated_data['recipient']
+        return Chat.objects.create(user1=user1, user2=user2)
 
     class Meta:
         model = Chat
         fields = ('uuid', 'date_created', 'user', 'recipient')
-        read_only_fields = ('uuid',)
+        read_only_fields = ('uuid', 'date_created', 'user')
