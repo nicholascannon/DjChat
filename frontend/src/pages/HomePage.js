@@ -3,7 +3,14 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useHistory} from 'react-router-dom';
 import {Spinner, Card, ListGroup, Button, Form} from 'react-bootstrap';
 
-import {getChats, selectChats, selectChatLoading, createChat} from '../reducers/chatSlice';
+import {
+	getChats,
+	selectChats,
+	selectChatLoading,
+	createChat,
+	selectChatError,
+	deleteChat
+} from '../reducers/chatSlice';
 
 import './HomePage.css';
 
@@ -11,6 +18,7 @@ function HomePage() {
 	const dispatch = useCallback(useDispatch(), []);
 	const chats = useSelector(selectChats);
 	const isLoading = useSelector(selectChatLoading);
+	const error = useSelector(selectChatError);
 	const [username, setUsername] = useState('');
 	const history = useHistory();
 
@@ -23,7 +31,6 @@ function HomePage() {
 	};
 
 	const submitCreateChat = e => {
-		console.log(e);
 		e.preventDefault();
 		dispatch(createChat(username, history));
 	};
@@ -39,10 +46,13 @@ function HomePage() {
 					</Card.Header>
 					<ListGroup variant="flush">
 						{chats.map(chat => (
-							<ListGroup.Item key={chat.uuid}>
+							<ListGroup.Item key={chat.uuid} className="chatLink">
 								<a href={`/chat/${chat.uuid}`}>
 									{chat.user.username} - {chat.date_created}
 								</a>
+								<Button variant="danger" onClick={() => dispatch(deleteChat(chat.uuid))}>
+									X
+								</Button>
 							</ListGroup.Item>
 						))}
 
@@ -61,7 +71,10 @@ function HomePage() {
 									<option value="admin"></option>
 								</datalist> */}
 
-								<Button type="submit" className="mb-2">
+								<Button
+									type="submit"
+									className="mb-2"
+									disabled={!username && username.replace(/\s+/g, '') === ''}>
 									Chat
 								</Button>
 							</Form>
@@ -69,6 +82,7 @@ function HomePage() {
 					</ListGroup>
 				</Card>
 			)}
+			{error && <p style={{color: 'red'}}>{error}</p>}
 		</div>
 	);
 }

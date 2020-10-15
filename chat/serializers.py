@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import APIException, ValidationError
 from logging import getLogger
 
 from .models import ChatMessage, Chat
@@ -49,8 +49,11 @@ class ChatSerializer(serializers.ModelSerializer):
 
     def validate_recipient(self, recipient):
         """
-        Checks if recipient is a valid user. 
+        Checks if recipient is a valid user and not the current user.
         """
+        if recipient == self.context['request'].user.username:
+            raise ValidationError('Cannot start chat with yourself')
+
         try:
             return User.objects.get(username=recipient)
         except User.DoesNotExist:

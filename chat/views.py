@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView, ListCreateAPIView, DestroyAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, DestroyAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 

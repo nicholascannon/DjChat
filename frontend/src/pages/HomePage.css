@@ -5,3 +5,9 @@
 
 	margin-top: 2em;
 }
+
+.HomePage .chatLink {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}

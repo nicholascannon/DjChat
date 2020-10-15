@@ -27,6 +27,9 @@ export const chatSlice = createSlice({
 			state.chats = action.payload;
 			state.loading = false;
 		},
+		filterChat: (state, action) => {
+			state.chats = state.chats.filter(chat => chat.uuid !== action.payload);
+		},
 		setLoading: (state, action) => {
 			state.loading = action.payload;
 			state.error = null;
@@ -45,7 +48,8 @@ export const {
 	clearMessages,
 	loadChats,
 	setError,
-	setLoading
+	setLoading,
+	filterChat
 } = chatSlice.actions;
 
 // SELECTORS
@@ -79,7 +83,20 @@ export const createChat = (recipient, history) => dispatch => {
 			dispatch(setLoading(false));
 			history.push(`/chat/${chat_uuid}`);
 		})
-		.catch(err => dispatch(setError(err.response.data.detail)));
+		.catch(err => {
+			if (err.response.data.recipient && err.response.data.recipient.length) {
+				dispatch(setError(err.response.data.recipient[0]));
+			} else {
+				dispatch(setError('Error creating new chat'));
+			}
+		});
+};
+
+export const deleteChat = chatUuid => dispatch => {
+	instance
+		.delete(`/chat/${chatUuid}/delete/`)
+		.then(res => dispatch(filterChat(chatUuid)))
+		.catch(err => dispatch(setError(err.response.data.detail || 'Could not delete chat')));
 };
 
 export default chatSlice.reducer;
