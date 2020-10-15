@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView, ListCreateAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 
@@ -12,15 +12,22 @@ class ChatMessageListView(ListAPIView):
     serializer_class = ChatMessageSerializer
 
     def get_queryset(self):
-        """
-        Filter chat messages by requested chat
-        """
-        return ChatMessage.objects.filter(chat__uuid=self.kwargs['chat_uuid'].order_by('-date_sent'))
+        return ChatMessage.objects.filter(chat__uuid=self.kwargs['chat_uuid']).order_by('-date_sent')
 
 
 class ChatListCreateView(ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ChatSerializer
+
+    def get_queryset(self):
+        return Chat.objects.filter(Q(user1=self.request.user) | Q(user2=self.request.user))
+
+
+class ChatDestroyView(DestroyAPIView):
+    permission_classes = [HasChatPermissions]
+    serializer_class = ChatSerializer
+    lookup_field = 'uuid'
+    lookup_url_kwarg = 'chat_uuid'
 
     def get_queryset(self):
         return Chat.objects.filter(Q(user1=self.request.user) | Q(user2=self.request.user))

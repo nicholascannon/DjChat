@@ -1,8 +1,13 @@
 from rest_framework import serializers
+from rest_framework.exceptions import APIException
+from logging import getLogger
 
 from .models import ChatMessage, Chat
 from users.serializers import UserSerializer
 from users.models import User
+
+
+logger = getLogger('chat_serializers')
 
 
 class ChatMessageSerializer(serializers.ModelSerializer):
@@ -13,8 +18,12 @@ class ChatMessageSerializer(serializers.ModelSerializer):
         Returns true if this chat message was recieved by the user getting the 
         messages.
         """
-        user = self.context['request'].user
-        return user != obj.sender
+        try:
+            user = self.context['request'].user
+            return user != obj.sender
+        except KeyError:
+            logger.exception('Request not passed to context')
+            raise APIException()
 
     class Meta:
         model = ChatMessage
@@ -29,10 +38,14 @@ class ChatSerializer(serializers.ModelSerializer):
         """
         Returns the other users model.
         """
-        if obj.user1_id == self.context['request'].user.id:
-            return UserSerializer(obj.user2).data
+        try:
+            if obj.user1_id == self.context['request'].user.id:
+                return UserSerializer(obj.user2).data
 
-        return UserSerializer(obj.user1).data
+            return UserSerializer(obj.user1).data
+        except KeyError:
+            logger.exception('Request not passed to context')
+            raise APIException()
 
     def validate_recipient(self, recipient):
         """
@@ -42,6 +55,9 @@ class ChatSerializer(serializers.ModelSerializer):
             return User.objects.get(username=recipient)
         except User.DoesNotExist:
             raise serializers.ValidationError(f'Invalid user {recipient}')
+        except Exception as e:
+            logger.exception('Recipient validation error')
+            raise APIException('Could not validated chat recipient', 500)
 
     def create(self, validated_data):
         user1 = self.context['request'].user

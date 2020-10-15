@@ -1,7 +1,12 @@
 from rest_framework import permissions
+from rest_framework.exceptions import APIException
 from django.db.models import Q
+from logging import getLogger
 
 from .models import Chat
+
+
+logger = getLogger('chat_permissions')
 
 
 class HasChatPermissions(permissions.BasePermission):
@@ -23,4 +28,10 @@ class HasChatPermissions(permissions.BasePermission):
                 Q(user1=request.user) | Q(user2=request.user)))
             return True
         except Chat.DoesNotExist:
+            logger.warning(
+                f'Chat access permission denied for user {request.user}')
             return False
+        except KeyError:
+            raise APIException('No chat uuid supplied', code=400)
+        except Exception:
+            logger.exception('Error checking chat permission')
