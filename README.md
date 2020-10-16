@@ -1,6 +1,6 @@
 # DjChat
 
-A simple direct messaging application built with Django, Django Channels, React hooks and Redux toolkit.
+A simple direct messaging application built with Django, Django Channels, React hooks, Redux toolkit and Redis.
 
 Includes:
 
