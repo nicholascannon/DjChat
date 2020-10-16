@@ -71,7 +71,13 @@ export const getChats = () => dispatch => {
 	instance
 		.get('/chat/')
 		.then(res => dispatch(loadChats(res.data)))
-		.catch(err => dispatch(setError(err.response.data.detail)));
+		.catch(err => {
+			if (err.response) {
+				dispatch(setError(err.response.data.detail));
+			} else {
+				dispatch(setError('Error fetching chats'));
+			}
+		});
 };
 
 export const createChat = (recipient, history) => dispatch => {

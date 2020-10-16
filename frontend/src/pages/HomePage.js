@@ -1,7 +1,8 @@
 import React, {useEffect, useCallback, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {useHistory} from 'react-router-dom';
+import {Redirect, useHistory} from 'react-router-dom';
 import {Spinner, Card, ListGroup, Button, Form} from 'react-bootstrap';
+import moment from 'moment';
 
 import {
 	getChats,
@@ -11,6 +12,7 @@ import {
 	selectChatError,
 	deleteChat
 } from '../reducers/chatSlice';
+import {selectIsLoggedIn, selectIsLoading} from '../reducers/userSlice';
 
 import './HomePage.css';
 
@@ -19,12 +21,16 @@ function HomePage() {
 	const chats = useSelector(selectChats);
 	const isLoading = useSelector(selectChatLoading);
 	const error = useSelector(selectChatError);
+	const isAuthLoading = useSelector(selectIsLoading);
+	const isLoggedIn = useSelector(selectIsLoggedIn);
 	const [username, setUsername] = useState('');
 	const history = useHistory();
 
 	useEffect(() => {
 		dispatch(getChats());
 	}, [dispatch]);
+
+	if (!isLoggedIn) return <Redirect to="/login" />;
 
 	const changeUsername = e => {
 		setUsername(e.target.value);
@@ -37,10 +43,10 @@ function HomePage() {
 
 	return (
 		<div className="HomePage">
-			{isLoading ? (
+			{isLoading || isAuthLoading ? (
 				<Spinner animation="grow" />
 			) : (
-				<Card style={{width: '40vw'}}>
+				<Card>
 					<Card.Header>
 						<strong>Your conversations</strong>
 					</Card.Header>
@@ -48,7 +54,8 @@ function HomePage() {
 						{chats.map(chat => (
 							<ListGroup.Item key={chat.uuid} className="chatLink">
 								<a href={`/chat/${chat.uuid}`}>
-									{chat.user.username} - {chat.date_created}
+									<span>{chat.user.username}</span>
+									<span>{moment(chat.date_created).fromNow()}</span>
 								</a>
 								<Button variant="danger" onClick={() => dispatch(deleteChat(chat.uuid))}>
 									X

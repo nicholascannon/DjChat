@@ -6,8 +6,23 @@
 	margin-top: 2em;
 }
 
+.HomePage .card {
+	width: 500px;
+}
+
 .HomePage .chatLink {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+}
+.HomePage .chatLink a {
+	text-decoration: none;
+	display: flex;
+	flex-direction: column;
+}
+.HomePage .chatLink a span:first-child {
+	font-weight: bold;
+}
+.HomePage .chatLink a span:last-child {
+	color: gray;
 }

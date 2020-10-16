@@ -57,7 +57,7 @@ class ChatSerializer(serializers.ModelSerializer):
         try:
             return User.objects.get(username=recipient)
         except User.DoesNotExist:
-            raise serializers.ValidationError(f'Invalid user {recipient}')
+            raise serializers.ValidationError(f'{recipient} does not exist')
         except Exception as e:
             logger.exception('Recipient validation error')
             raise APIException('Could not validated chat recipient', 500)
