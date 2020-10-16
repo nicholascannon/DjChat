@@ -23,8 +23,8 @@ class HasChatPermissions(permissions.BasePermission):
         try:
             # try and get the chat uuid with the current user
             chat_uuid = view.kwargs.get('chat_uuid')
-            Chat.objects.get(Q(uuid=chat_uuid) & (
-                Q(user1=request.user) | Q(user2=request.user)))
+            Chat.objects.get(Q(uuid=chat_uuid),
+                             (Q(user1=request.user) | Q(user2=request.user)))
             return True
         except Chat.DoesNotExist:
             logger.warning(

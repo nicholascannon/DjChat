@@ -10,7 +10,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_chat(self, chat_uuid, user):
-        return Chat.objects.get(Q(uuid=chat_uuid) & (Q(user1=user) | Q(user2=user)))
+        return Chat.objects.get(Q(uuid=chat_uuid), (Q(user1=user) | Q(user2=user)))
 
     @database_sync_to_async
     def create_message(self, message, sender, uuid):
