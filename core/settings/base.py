@@ -115,6 +115,7 @@ STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'users.User'
 
+# allows cookies to be sent cross site
 CORS_ALLOW_CREDENTIALS = True
 
 # Channels
