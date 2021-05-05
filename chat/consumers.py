@@ -47,7 +47,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         uuid = payload.get('uuid')
 
         if not message or message.isspace():
-            await self.send(json.dumps({'type': 'error', 'data': {'message': 'Please enter a message'}}))
+            await self.send(json.dumps({
+                'type': 'error',
+                'data': {'message': 'Please enter a message'}
+            }))
         else:
             try:
                 # create message then send to channel group
