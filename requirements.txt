@@ -15,7 +15,6 @@ daphne==2.5.0
 defusedxml==0.6.0
 Django==3.1.1
 django-cors-headers==3.5.0
-django-rest-framework==0.1.0
 djangorestframework==3.11.1
 hiredis==1.1.0
 hyperlink==20.0.1
